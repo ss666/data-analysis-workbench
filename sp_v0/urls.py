@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import include, url
 from back_end.views import file_upload,vis_exp,abtest_exp,did_exp,ttest_exp,chitest_exp,lt_pred_exp,cem_exp,psm_exp,ml_exp,test,file_download
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
+    #url(r'^online/', include('login.urls')),
     path('file_upload/', file_upload),
-    path('vis/',vis_exp),
+    path('vis/', vis_exp),
     path('abtest/', abtest_exp),
     path('did/', did_exp),
     path('ttest/', ttest_exp),

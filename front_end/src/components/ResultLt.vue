@@ -1,6 +1,21 @@
 <template>
- <div>
- <div id="container" style="width: 600px;height:400px;"></div>
+ <div><center>
+ <el-table
+      :data="tableData"
+      style="width: 100%">
+      <el-table-column
+        prop="name"
+        label="number of customers / period"
+        width="300">
+      </el-table-column>
+      <el-table-column
+        prop="data"
+        label="total lifetime value($)"
+        width="300">
+      </el-table-column>
+ </el-table>
+ <div id="container" style="margin-top:30px;width:600px;height:400px;"></div>
+ </center>
  </div>
 </template>
 
@@ -11,35 +26,35 @@ export default {
   name: "App",
   data() {
     return {
-      mse:'',
+      mse:'aeas',
       x:[],
       y:[],
       y_pred:[],
-      ltv
+      tableData: [],
     };
   },
   methods: {
   },
   mounted() {
     this.$nextTick(function() {
-      this.mse = this.$route.params.mse;
+      this.tableData = this.$route.params.tableData;
       this.x = this.$route.params.x;
       this.y = this.$route.params.y;
       this.y_pred = this.$route.params.y_pred;
-      this.ltv = this.$route.params.ltv;
+      //this.ltv = this.$route.params.ltv;
       var myChart = echarts.init(document.getElementById("container"));
-      myChart.setOption({        //加载数据图表
+      myChart.setOption({
         title: {
-          text: "Life Time"
+          text: "Customers Retained"
         },
-        tooltip:{
-          trigger:'axis'
-        },
+        tooltip:{formatter:function(datas) {
+                    return datas.value.toFixed(0);
+                }},
         legend:{
-          data:['real','true']
+          data:['real','prediction']
         },
         xAxis: {
-          data: this.index
+          data: this.x
         },
         yAxis: {},
         series: [
@@ -48,6 +63,7 @@ export default {
             data: this.y_pred,
             type: 'line',
             smooth:true,
+            color:'#845B83',
           },
           {
             name: "real",
@@ -58,9 +74,10 @@ export default {
         ]
        });
      myChart.setOption(this.option);
+
     });
   }
 };
 </script>
-<style>
+<style lang='less' scoped>
 </style>

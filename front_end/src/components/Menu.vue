@@ -1,16 +1,20 @@
 import axios from 'axios'
 <template>
-<div>
-
-  <div class='right_top'>
-   <el-button type="primary" round v-on:click="tologin">Sign in</el-button>
-   <el-button type="primary" round >Sign up</el-button>
+<div style="margin-top:0px">
+  <div class='top_container'>
+  <div class='word'>
+  <p><font size="50" color='#845B83' font family='Helvetica Neue' style='font-weight:bolder;font-style:italic;'>Metis</font></p>
   </div>
 
-  <div>
+  <div class='right_top'>
+   <el-button style='color:#ffffff; background-color:#20749e'  round >Tutorial</el-button>
+   <el-button style='color:#ffffff; background-color:#49b4ea'  round v-on:click="tologin">Sign in</el-button>
+   <el-button style='color:#ffffff; background-color:#49b4ea'  round >Sign up</el-button>
+  </div>
+
+  <div class='upload'>
     <el-upload
     class="upload-demo"
-    style="left:30px;position:absolute"
     action="http://127.0.0.1:8000/file_upload/"
     :on-preview="handlePreview"
     :on-remove="handleRemove"
@@ -19,22 +23,23 @@ import axios from 'axios'
     :limit="1"
     :on-exceed="handleExceed"
     :file-list="fileList">
-    <el-button size="small" type="primary">UP LOAD</el-button>
+    <el-button size="small" style='color:#ffffff; background-color:#49b4ea'>UP LOAD</el-button>
     <div slot="tip" class="el-upload__tip" style='display:inline; margin-left:10px'>Pleas upload .csv file</div>
     </el-upload>
   </div>
+  </div>
 
   <div class='center_container'>
-   <el-button style='color:#ffffff; background-color:#303133' round @click="visFormVisible = true" >Data Visualisation</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="abtestFormVisible = true" >AB test</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="didFormVisible = true" >DID test</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="ttestFormVisible = true" >T test</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="chitestFormVisible = true" >Chi-squared Test</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="ltFormVisible = true" >Life Time Prediction</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="matchingFormVisible = true" >Matching</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="cluFormVisible = true" >Clustering</el-button>
-   <el-button style='color:#fff; background-color:#303133' round @click="claFormVisible = true" >Classification</el-button>
-   <el-button round @click="testFormVisible = true" style="background-color:#2b4b6b;">TEST</el-button>
+   <el-button style='color:#ffffff; background-color:#845B83' round @click="visFormVisible = true" ><font class='button_font'>Data Visualisation</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="abtestFormVisible = true" ><font class='button_font'>AB test</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="didFormVisible = true" ><font class='button_font'>DID test</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="ttestFormVisible = true" ><font class='button_font'>T test</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="chitestFormVisible = true" ><font class='button_font'>Chi-squared Test</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="ltFormVisible = true" ><font class='button_font'>Life Time Prediction</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="matchingFormVisible = true" ><font class='button_font'>Matching</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="cluFormVisible = true" ><font class='button_font'>Clustering</font></el-button>
+   <el-button style='color:#fff; background-color:#845B83' round @click="claFormVisible = true" ><font class='button_font'>Classification</font></el-button>
+   <el-button round @click="tores" style="background-color:#2b4b6b;">TEST</el-button>
   </div>
 
 <el-dialog title="Data Visualisation" :visible.sync="visFormVisible">
@@ -44,6 +49,7 @@ import axios from 'axios'
         <el-option label="line" value="line"></el-option>
         <el-option label="bar" value="bar"></el-option>
         <el-option label="pie" value="pie"></el-option>
+        <el-option label="scatter" value="scatter"></el-option>
       </el-select>
     </el-form-item>
   </el-form>
@@ -53,20 +59,20 @@ import axios from 'axios'
   </div>
 </el-dialog>
 
-<el-dialog title="AB test" :visible.sync="abtestFormVisible">
+<el-dialog title="A/B test" :visible.sync="abtestFormVisible">
   <el-form :model="ab_config">
-    <el-form-item label="significance level" :label-width="formLabelWidth">
-      <el-input v-model="ab_config.conf" autocomplete="off"></el-input>
+    <el-form-item label="significance level (alpha)" :label-width="formLabelWidth">
+      <el-input v-model="ab_config.conf" placeholder='decimal required (default:0.05)' autocomplete="off"></el-input>
     </el-form-item>
     <el-form-item label="columns for Chi-Squared Test" :label-width="formLabelWidth">
       <el-input v-model="ab_config.chi_squared_columns" autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="digit" :label-width="formLabelWidth">
-      <el-input v-model="ab_config.digit" autocomplete="off"></el-input>
+    <el-form-item label="decimal places" :label-width="formLabelWidth">
+      <el-input v-model="ab_config.digit" placeholder='integer required (default:2)' autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="segment on new/returning users">
+   <!-- <el-form-item label="segment on new/returning users">
      <el-switch v-model="ab_config.segment"></el-switch>
-    </el-form-item>
+    </el-form-item> -->
   </el-form>
   <div slot="footer" class="dialog-footer">
     <el-button @click="abtestFormVisible = false">cancel</el-button>
@@ -76,20 +82,23 @@ import axios from 'axios'
 
 <el-dialog title="Difference in Difference" :visible.sync="didFormVisible">
   <el-form :model="did_config">
-    <el-form-item label="the response variable" :label-width="formLabelWidth">
-      <el-input v-model="did_config.dv" autocomplete="off"></el-input>
+      <el-form-item label="treatment column" :label-width="formLabelWidth">
+      <el-input v-model="did_config.treatment_col" style="width: 100%;" placeholder='column to distinguish between treatment group and control group (default: treatment)' autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="time" :label-width="formLabelWidth">
-      <el-input v-model="did_config.date" autocomplete="off"></el-input>
+    <el-form-item label="id column" :label-width="formLabelWidth">
+      <el-input v-model="did_config.id_col" placeholder='(default: id)' autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="treatment columns" :label-width="formLabelWidth">
-      <el-input v-model="did_config.treatment_col" autocomplete="off"></el-input>
+    <el-form-item label="date column" :label-width="formLabelWidth">
+      <el-input v-model="did_config.date_col" placeholder='(default: date)' autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="id columns" :label-width="formLabelWidth">
-      <el-input v-model="did_config.id_col" autocomplete="off"></el-input>
+  <el-form-item label="significance level (alpha)" :label-width="formLabelWidth">
+      <el-input v-model="did_config.alpha" placeholder='decimal required (default:0.05)' autocomplete="off"></el-input>
+  </el-form-item>
+    <el-form-item label="outcome " :label-width="formLabelWidth">
+      <el-input v-model="did_config.dv" placeholder='column name of the response variable' autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="date columns" :label-width="formLabelWidth">
-      <el-input v-model="did_config.date_col" autocomplete="off"></el-input>
+    <el-form-item label="time point" :label-width="formLabelWidth">
+      <el-input v-model="did_config.treatment_date" autocomplete="off"></el-input>
     </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
@@ -100,11 +109,11 @@ import axios from 'axios'
 
 <el-dialog title="Student's t-test" :visible.sync="ttestFormVisible">
   <el-form :model="ttest_config">
-  <el-form-item label="significance level" :label-width="formLabelWidth">
-      <el-input v-model="ttest_config.conf" autocomplete="off"></el-input>
+  <el-form-item label="significance level (alpha)" :label-width="formLabelWidth">
+      <el-input v-model="ttest_config.conf" placeholder='decimal required (default:0.05)' autocomplete="off"></el-input>
   </el-form-item>
-  <el-form-item label="the test value for one sample t-test" :label-width="formLabelWidth">
-      <el-input v-model="ttest_config.y" autocomplete="off"></el-input>
+  <el-form-item label="test value" :label-width="formLabelWidth">
+      <el-input v-model="ttest_config.y" placeholder='required for one sample t-test' autocomplete="off"></el-input>
   </el-form-item>
   <el-form-item label="type" :label-width="formLabelWidth">
       <el-select v-model="ttest_config.mode" placeholder="types of t-test">
@@ -120,16 +129,28 @@ import axios from 'axios'
   </div>
 </el-dialog>
 
+<el-dialog title="Chi-Squared Test" :visible.sync="chitestFormVisible">
+  <el-form :model="ttest_config">
+  <el-form-item label="significance level (alpha)" :label-width="formLabelWidth">
+      <el-input v-model="chitest_config.alpha" placeholder='decimal required (default:0.05)' autocomplete="off"></el-input>
+  </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="chitestFormVisible = false">cancel</el-button>
+    <el-button type="primary" @click="chitest_upload">start</el-button>
+  </div>
+</el-dialog>
+
 <el-dialog title="Life Time Prediction" :visible.sync="ltFormVisible">
   <el-form :model="lt_config">
-    <el-form-item label="ARUP" :label-width="formLabelWidth">
-        <el-input v-model="lt_config.arup" autocomplete="off"></el-input>
+    <el-form-item label="ARPU ($)" :label-width="formLabelWidth">
+        <el-input v-model="lt_config.arup" placeholder="e.g.: 1.00" autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="days" :label-width="formLabelWidth">
-        <el-input v-model="lt_config.days" autocomplete="off"></el-input>
+    <el-form-item label="train days" :label-width="formLabelWidth">
+        <el-input v-model="lt_config.days" placeholder="e.g.: 20 (if you want to predict LTV using retention in 20 days)" autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="days pred" :label-width="formLabelWidth">
-        <el-input v-model="lt_config.days_pred" autocomplete="off"></el-input>
+    <el-form-item label="pred. days " :label-width="formLabelWidth">
+        <el-input v-model="lt_config.pred_days" placeholder="e.g.: 100 (if you want to predict LTV in the future 100 days) "autocomplete="off"></el-input>
     </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
@@ -144,24 +165,30 @@ import axios from 'axios'
      <el-form :model="psm_config">
         <el-form-item label="model" :label-width="formLabelWidth">
           <el-select v-model="psm_config.model" placeholder="model type">
-              <el-option label="Logistic Regression" value="LR"></el-option>
+              <el-option label="Logistic Regression (popular method)" value="LR"></el-option>
               <el-option label="Random Forest" value="line"></el-option>
               <el-option label="Light GBM" value="bar"></el-option>
               <el-option label="XGBoost" value="XGBoost"></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="features" :label-width="formLabelWidth">
-          <el-input v-model="psm_config.features" autocomplete="off"></el-input>
+          </el-form-item>
+        <el-form-item label="treatment column" :label-width="formLabelWidth">
+          <el-input v-model="psm_config.treatment_col" placeholder='column to distinguish between treatment group and control group' autocomplete="off"></el-input>
+          </el-form-item>
+        <el-form-item label="id column" :label-width="formLabelWidth">
+          <el-input v-model="psm_config.id_col" placeholder='(default: id)' autocomplete="off"></el-input>
+          </el-form-item>
+        <el-form-item label="indices of features" :label-width="formLabelWidth">
+          <el-input v-model="psm_config.features"  placeholder="observed baseline variables (for example: 2:9)" autocomplete="off"></el-input>
          </el-form-item>
         <el-form-item label="label" :label-width="formLabelWidth">
-          <el-input v-model="psm_config.label" autocomplete="off"></el-input>
+          <el-input v-model="psm_config.label"  placeholder="outcome or specific variable related to treatment participation" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="caliper" :label-width="formLabelWidth">
-          <el-input v-model="psm_config.caliper" autocomplete="off"></el-input>
+          <el-input v-model="psm_config.caliper" placeholder="a maximum allowable distance between propensity scores (default: 0.05)" autocomplete="off"></el-input>
          </el-form-item>
-        <el-form-item label="top" :label-width="formLabelWidth">
-          <el-input v-model="psm_config.top" autocomplete="off"></el-input>
-        </el-form-item>
+       <!-- <el-form-item label="top" :label-width="formLabelWidth">
+          <el-input v-model="psm_config.top"  autocomplete="off"></el-input>
+        </el-form-item> -->
       </el-form>
       <el-button @click="matchingFormVisible = false">cancel</el-button>
       <el-button type="primary" @click="psm_upload">start</el-button>
@@ -190,7 +217,7 @@ import axios from 'axios'
       </el-select>
   </el-form-item>
   <el-form-item label="cluster" :label-width="formLabelWidth">
-      <el-input v-model="cla_config.cluster" autocomplete="off"></el-input>
+      <el-input v-model="cla_config.cluster" placeholder='the number of clusters to form' autocomplete="off"></el-input>
   </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
@@ -204,16 +231,21 @@ import axios from 'axios'
     <el-form-item label="model" :label-width="formLabelWidth">
         <el-select v-model="cla_config.model" placeholder="model">
           <el-option label="Support Vector Machine" value="svm"></el-option>
+          <el-option label="K-nearest Neighbors" value="knn"></el-option>
         </el-select>
     </el-form-item>
     <el-form-item label="the length of train dataset" :label-width="formLabelWidth">
         <el-input v-model="cla_config.length" autocomplete="off"></el-input>
     </el-form-item>
     <el-form-item label="kernel" :label-width="formLabelWidth">
-        <el-input v-model="cla_config.kernel" autocomplete="off"></el-input>
+         <el-select v-model="cla_config.kernel" placeholder="required for SVM">
+          <el-option label="linear" value="linear"></el-option>
+          <el-option label="radial basis function" value="rbf"></el-option>
+          <el-option label="sigmoid" value="sigmoid"></el-option>
+        </el-select>
     </el-form-item>
     <el-form-item label="number of neighbours" :label-width="formLabelWidth">
-        <el-input v-model="cla_config.neighbors" autocomplete="off"></el-input>
+        <el-input v-model="cla_config.neighbors"  placeholder="required for KNN" autocomplete="off"></el-input>
     </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
@@ -257,18 +289,24 @@ export default{
           id_col:'',
           date_col:'',
           dv:'',
-          date:''},
+          treatment_date:'',
+          alpha:''},
         ttest_config:{
           conf:'',
+          y:'',
           mode:''},
+        chitest_config:{
+          alpha:''},
         lt_config:{
           arup:'',
           days:'',
-          days_pred:''},
+          pred_days:''},
         cem_config:{
           first_feature:'',
           last_feature:''},
         psm_config:{
+          treatment_col:'',
+          id_col:'',
           features:'',
           model:'',
           label:'',
@@ -320,26 +358,23 @@ export default{
   	abtest_upload(){
       this.didFormVisible = false;
   	  var that = this;
-  	  //console.log(that.ab_config.name);
+  	  var arr = that.ab_config.chi_squared_columns.split(',');
   	  this.$axios.post('http://127.0.0.1:8000/abtest/', {
-         data:{
          conf: that.ab_config.conf,
-         age: that.ab_config.age
-         },
-         responseType: 'blob'
+         chi_squared_columns: arr,
+         digit: that.ab_config.digit
       })
       .then(res => {
-            const blob = new Blob([res]);
-            const fileName = 'abtest_result.xlsx';
+            const fileName = 'abtest_result.csv';
             const elink = document.createElement('a');
             elink.download = fileName;
             elink.style.display = 'none';
-            elink.href = URL.createObjectURL(blob);
+            elink.href = "../../static/abtest_result.csv";
             document.body.appendChild(elink);
             elink.click();
             URL.revokeObjectURL(elink.href);
             document.body.removeChild(elink);
-       })
+      })
       .catch(function (error) {
           console.log('ERROR');
       });
@@ -353,20 +388,30 @@ export default{
          id_col: that.did_config.id_col,
          date_col: that.did_config.date_col,
          dv: that.did_config.dv,
-         date: that.did_config.treatment_date
+         date: that.did_config.treatment_date,
+         alpha: that.did_config.alpha,
       })
       .then(function (response) {
-         //console.log(response);
-         //that.msg = JSON.stringify(response);
          that.res= response.data.res;
          that.p_value=response.data.p_value;
-         that.coef=response.data.coef;
+         that.effect=response.data.effect;
   	     that.$router.push({
 					 name:'Result',
 					 params:{
-					 res:that.res,
-					 p_value:that.p_values,
-					 coef:that.coef
+					 tableData: [{
+					  name: 'confidence level',
+            data: "95%"
+            },{
+					  },{
+            name: 'result',
+            data: that.res
+            }, {
+            name: 'p-value',
+            data: that.p_value,
+            }, {
+            name: 'effect',
+            data: that.effect,
+            }]
 					 }
 					});
       })
@@ -378,7 +423,7 @@ export default{
   	ttest_upload(){
       this.ttestFormVisible = false;
   	  var that = this;
-  	  this.$axios.post('http://127.0.0.1:8000/test/', {
+  	  this.$axios.post('http://127.0.0.1:8000/ttest/', {
          mode: that.ttest_config.mode,
          conf: that.ttest_config.conf,
          y: that.ttest_config.y
@@ -391,8 +436,20 @@ export default{
   	     that.$router.push({
 					 name:'Result',
 					 params:{
-					 res:that.res,
-					 p_value:that.p_values
+					 tableData: [{
+					  name:'hypothesized population mean',
+					  data: that.ttest_config.y
+					  },{
+            name: 'confidence level',
+            data: (1-that.ttest_config.conf)*100+"%"
+            },{
+					  },{
+            name: 'result',
+            data: that.res
+            }, {
+            name: 'p-value',
+            data: that.p_value,
+            }]
 					 }
 					});
       })
@@ -404,13 +461,21 @@ export default{
   	chitest_upload(){
       this.chitestFormVisible = false;
   	  var that = this;
-  	  this.$axios.get('http://127.0.0.1:8000/chitest/').then(function(response){
+  	  this.$axios.post('http://127.0.0.1:8000/chitest/', {
+         alpha: that.chitest_config.alpha,
+      })
+      .then(function(response){
   	    that.msg = response.data; //JSON.stringify(response);
   	    that.$router.push({
 					 name:'Result',
 					 params:{
-					 res:that.res,
-					 p_value:that.p_values
+					 tableData: [{
+            name: 'result',
+            data: that.res
+          }, {
+            name: 'p value',
+            data: that.p_values,
+          }]
 					 }
 					});
       })
@@ -429,13 +494,15 @@ export default{
       })
       .then(function (response) {
   	     that.$router.push({
-					 name:'ResultLt',
+					 name:'ResultLt', //ResultLt
 					 params:{
-					 mses: that.mse,
-					 x: that.x,
-					 y: that.y,
-					 y_pred: that.y_pred,
-					 ltv: that.ltv
+					 x: response.data.x,
+					 y:  response.data.y,
+					 y_pred: response.data.y_pred,
+					 tableData: [{
+            name: response.data.base_cnt+' / '+response.data.pred_days+'(days)',
+            data: response.data.ltv.toFixed(2)
+            }]
 					 }
 					});
       })
@@ -468,19 +535,24 @@ export default{
       this.psmFormVisible = false;
   	  var that = this;
   	  this.$axios.post('http://127.0.0.1:8000/psm/', {
+  	     treatment_col: that.psm_config.treatment_col,
+         id_col: that.psm_config.id_col,
          features: that.psm_config.features,
          model: that.psm_config.model,
          label: that.psm_config.label,
          caliper: that.psm_config.caliper,
          top: that.psm_config.top,
       })
-      .then(function (response) {
-  	     that.$router.push({
-					 name:'Result',
-					 params:{
-					 res:'psm_undefined'
-					 }
-					});
+      .then(res => {
+            const fileName = 'matching_psm_result.csv';
+            const elink = document.createElement('a');
+            elink.download = fileName;
+            elink.style.display = 'none';
+            elink.href = "../../static/matching_psm_result.csv";
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href);
+            document.body.removeChild(elink);
       })
       .catch(function (error) {
           console.log('ERROR');
@@ -496,18 +568,17 @@ export default{
          model: that.cla_config.model,
          cluster: that.cla_config.cluster
          },
-         responseType: 'blob'
+        // responseType: 'blob'
       })
       .then(res => {
-            const blob = new Blob([res]);
-            const fileName = 'clustering_result.xlsx';
+            const fileName = 'clustering_result.csv';
             const elink = document.createElement('a');
             elink.download = fileName;
             elink.style.display = 'none';
-            elink.href = URL.createObjectURL(blob);
+            elink.href = "../../static/clustering_result.csv";
             document.body.appendChild(elink);
             elink.click();
-            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            URL.revokeObjectURL(elink.href);
             document.body.removeChild(elink);
        })
       .catch(function (error) {
@@ -519,22 +590,19 @@ export default{
       this.didFormVisible = false;
   	  var that = this;
   	  this.$axios.post('http://127.0.0.1:8000/ml/', {
-         data:{
   	     ml_type: 'cla',
          model: that.cla_config.model,
          length: that.cla_config.length,
          kernel: that.cla_config.kernel,
-         neighbors: that.cla_config.neighbors,
-         },
-         responseType: 'blob'
+         neighbors: that.cla_config.neighbors
+         //responseType: 'blob'
       })
       .then(res => {
-            const blob = new Blob([res]);
-            const fileName = 'classification_result.xlsx';
+            const fileName = 'classification_result.csv';
             const elink = document.createElement('a');
             elink.download = fileName;
             elink.style.display = 'none';
-            elink.href = URL.createObjectURL(blob);
+            elink.href = "../../static/classification_result.csv";
             document.body.appendChild(elink);
             elink.click();
             URL.revokeObjectURL(elink.href);
@@ -545,22 +613,66 @@ export default{
       });
     	},
 
+    test_tores(){
+      console.log('tores() success');
+      this.$router.push({
+        path:'/result',
+        name:'Result',
+        params:{
+          tableData: [{
+            date: '2016-05-02',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1518 弄'
+          }, {
+            date: '2016-05-04',
+            name: '王2虎',
+            address: '上海市普陀区金沙江路 1517 弄'
+          }, {
+            date: '2016-05-03',
+            name: '王4虎',
+            address: '上海市普陀区金沙江路 1516 弄'
+      }]
+      }
+      })
+      }
  }
 };
 
 </script>
 
 <style lang="less" scoped>
-.right_top{
-    position: absolute;
-    top: 20px;
-    right: 30px;
+.body{
+  margin:0px;
+}
+.top_container{
+  weigh:200px;
+  height:150px;
+  margin:0 auto;
+}
+
+.top_container .word{
+    float:left;
+    height:30px;
+    margin-left:40px;
+}
+
+.top_container .right_top{
+    float:right;
+    height:100px;
+    margin-right:10px;
+    margin-top:10px;
+
+}
+.top_container .upload{
+  position:absolute;
+  margin-top:90px;
+  margin-left:10px;
 }
 
 .center_container{
     position: absolute;
     left: 50%;
-    top: 58%;
+    top: 64%;
     transform: translate(-50%,-50%);
 
     display: grid;
@@ -574,5 +686,10 @@ export default{
   background-color:#2b4b6b;
   width:300px;
   height:200px;
+}
+
+.button_font{
+ font-weight:bolder;
+ font-size:20px;
 }
 </style>

@@ -1,6 +1,6 @@
 import json
-import xlrd
 import pandas as pd
+import xlrd
 from scipy import stats
 import numpy as np
 
@@ -54,18 +54,28 @@ def vis_exp(request):
 def abtest_exp(request):
     if request.method == "POST":
         data = json.loads(request.body)
-
-        digit = data.get('digit')
+        digit = int(data.get('digit'))
         binomial = data.get('chi_squared_columns')
-        conf = data.get('conf')
-        segment = data.get('segment')
+        conf = float(data.get('conf'))
+        #segment = data.get('segment')
 
-        file_dl = abtest.ab_test(path, digit, binomial, conf)
-        file = open(file_dl, 'rb')
-        response = HttpResponse(file)
-        response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename="test.xlsx" '
-        return response
+        file_name = abtest.ab_test(path, digit, binomial, conf)
+        '''
+        file_name = 'abtest_result.csv'
+        df.to_csv(file_name, index=False)
+        # print(file_name)
+        with open(file_name, 'rb') as file:
+            response = HttpResponse(file)
+            response['Content-Type'] = 'text/csv'  # Content-Type header: used to indicate the media type of the resource
+            response['Content-Disposition'] = 'attachment;filename="abtest_result.csv"'#"abtest_result.csv" '
+        #file = open(file_dl, 'rb')
+        #response = HttpResponse(content_type='text/csv')
+        #response['Content-Type'] = #'application/octet-stream'
+        #response['Content-Disposition'] = 'attachment;filename=abtest_result.csv'
+       # df.to_csv(response, index=False)
+            print('ok')
+        '''
+        return HttpResponse(file_name, content_type='application/json')
 
 
 def did_exp(request):
@@ -77,12 +87,16 @@ def did_exp(request):
         date_col = data.get('date_col')
         y = data.get('dv')
         post = data.get('date')
+        if treatment_col =='':
+            treatment_col = 'treatment'
+        if id_col == '':
+            id_col = 'treatment'
 
-        res, p, coef = did.did(path, treatment_col, id_col, date_col, y, post)
+        res, p, effect = did.did(path, y, post, treatment_col, id_col, date_col)
         content = {
             'res': res,
             'p_value': p,
-            'coef': coef
+            'effect': effect
         }
         content = json.dumps(content)
         return HttpResponse(content, content_type='application/json')
@@ -91,9 +105,9 @@ def did_exp(request):
 def ttest_exp(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        mode = data.get('mode')
-        conf = data.get('conf')
-        y = data.get('y')
+        mode = int(data.get('mode'))
+        conf = float(data.get('conf'))
+        y = float(data.get('y'))
         res, p = misc.t_test(path, conf, mode, y)
         content = {
             'res': res,
@@ -105,7 +119,9 @@ def ttest_exp(request):
 
 def chitest_exp(request):
     if request.method == "GET":
-        res, p = misc.chi_test(path)
+        data = json.loads(request.body)
+        alpha = data.get('alpha')
+        res, p = misc.chi_test(path, alpha)
         content = {
             'res': res,
             'p_value': p
@@ -117,13 +133,18 @@ def chitest_exp(request):
 def lt_pred_exp(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        days= data.get('days')
-        mse, x, y, y_pred = misc.lt_pred(path, days)
+        arup = int(data.get('arup'))
+        days = int(data.get('days'))
+        pred_days = int(data.get('pred_days'))
+        x, y, y_pred, ltv, base_cnt = misc.lt_pred(path, arup, days, pred_days)
         content = {
-            'mse': mse,
+            #'mse': mse,
             'x': x,
             'y': y,
-            'y_pred': y_pred
+            'y_pred': y_pred,
+            'ltv': ltv,
+            'pred_days': pred_days,
+            'base_cnt': int(base_cnt)
         }
         content = json.dumps(content)
         return HttpResponse(content, content_type='application/json')
@@ -134,30 +155,42 @@ def cem_exp(request):
         data = json.loads(request.body)
         feature_col_first = data.get('first_feature')
         feature_col_last = data.get('last_feature')
-        matching.CEM(path,feature_col_first,feature_col_last)
-        return HttpResponse()
+        matched = matching.cem(path, feature_col_first, feature_col_last)
+
+        file = open(matched, 'rb')
+        response = HttpResponse(file)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="cem_matched_dataset.xlsx" '
+        return response
 
 
 def psm_exp(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        features = data.get('features')
+        treatment_col = data.get('treatment_col')
+        id_col = data.get('id_col')
+        features = data.get('features').split(':')
         model = data.get('model')
         label = data.get('label')
         caliper = data.get('caliper')
-        top = data.get('top')
-        matched, pscore, match_id, feature_importance = matching.PSM(path, features, model, label, caliper, top)
-        content = {
-            'matched': matched,
-            'p_value': p
-        }
-        content = json.dumps(content)
-        return HttpResponse(content, content_type='application/json')
+        if caliper == '':
+            caliper = 0.5
+        else:
+            caliper = float(caliper)
+        #top = data.get('top')
+        feature_col_first = int(features[0]) - 1
+        feature_col_last = int(features[1]) - 1
+        matched_file_name = matching.psm(path, feature_col_first, feature_col_last,  label, model, caliper, treatment_col, id_col)
+
+        return HttpResponse(matched_file_name, content_type='application/json')
 
 
 def ml_exp(request):
     if request.method == "POST":
         data = json.loads(request.body)
+        file_dl = ''
+        print(data)
+        print(data.get('ml_type'))
 
         ml_type = data.get('ml_type')
         if ml_type == 'clu':
@@ -166,15 +199,15 @@ def ml_exp(request):
             file_dl = ml.cluster(path, model, cluster)
         elif ml_type == 'cla':
             model = data.get('model')
-            length = data.get('length')
+            length = int(data.get('length'))
             kernel = data.get('kernel')
-            neighbors = data.get('neighbors')
+            neighbors = int(data.get('neighbors'))
             file_dl = ml.classify(path, model, length, kernel, neighbors)
 
         file = open(file_dl, 'rb')
         response = HttpResponse(file)
         response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename="test.xlsx" '
+        response['Content-Disposition'] = 'attachment;filename="test2.xlsx" '
         return response
 
 
@@ -184,7 +217,7 @@ def test(request):
         return HttpResponse(res)
 
 
-def file_download(request):
+def test_file_download(request):
     if request.method == "POST":
         data = json.loads(request.body)
         flag = data.get('test')
@@ -192,7 +225,7 @@ def file_download(request):
         if flag=='1':
             file = open('./upload/test.xlsx', 'rb')
         response = HttpResponse(file)
-        response['Content-Type'] = 'application/octet-stream'  #设置头信息，告诉浏览器这是个文件
+        response['Content-Type'] = 'application/octet-stream'
         response['Content-Disposition'] = 'attachment;filename="test.xlsx" '
         print('ok')
         return response

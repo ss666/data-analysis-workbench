@@ -1,0 +1,4 @@
+metrics,base_avg,exp1 avg,delta exp1 to base(avg),p value for exp1 to base(avg),is sign. for exp1 to base(avg),exp2 avg,delta exp2 to base(avg),p value for exp2 to base(avg),is sign. for exp2 to base(avg),base1 avg,base2 avg,delta base2 to base1,p value for base2 to base1,is sign. for base2 to base1
+app_use_duration,6.08,5.86,-3.66%,0.04,yes,5.93,-2.42%,0.19,no,6.15,6.01,-2.34%,0.28,no
+is_1d_retention_device,27.95%,28.01%,0.06pp,0.79,no,27.76%,-0.19pp,0.41,no,27.85%,28.05%,0.19pp,0.46,no
+home_realshow_cnt,20.96,20.94,-0.14%,0.88,no,20.51,-2.16%,0.01,yes,20.96,20.97,0.08%,0.94,no

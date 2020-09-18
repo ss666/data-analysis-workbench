@@ -24,21 +24,17 @@ export default {
       this.index = this.$route.params.index;
       this.data = this.$route.params.data;
       var myChart = echarts.init(document.getElementById("main"));
-      myChart.setOption({        //加载数据图表
+      myChart.setOption({
         title: {
-          text: "title"
+          text: "Data Vis"
         },
-        tooltip: {},
-        //legend: {
-        //  data: ["销量"]
-        //},
         xAxis: {
           data: this.index
         },
         yAxis: {},
         series: [
           {
-            name: "销量",
+            name: "data",
             type: this.type,
             data: this.data
           }
